@@ -1,0 +1,5 @@
+runtime: nodejs8
+service: pixlack
+
+includes:
+- .secrets.yaml
