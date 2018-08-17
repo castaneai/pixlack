@@ -9,7 +9,7 @@ let pixivUserId = null;
 const memory = new Memory('Pixlack');
 const slackWebhookUrl = process.env.PIXLACK_SLACK_WEBHOOK_URL;
 
-app.get('/', async (req, res) => {
+const indexFunc = async (req, res) => {
     const origPosts = (await getFollowingOrigPosts(pixiv, pixivUserId)).reverse();
     const latestPost = await memory.getLatestPost();
     console.log('latestPost:', latestPost);
@@ -26,7 +26,9 @@ app.get('/', async (req, res) => {
     await memory.insertPosts(newPosts);
     newPosts.forEach(np => notifyToSlack(slackWebhookUrl, np));
     res.json(newPosts);
-});
+}
+
+app.get('/', indexFunc);
 
 (async () => {
     pixiv = new Pixiv();
@@ -96,3 +98,6 @@ function toSlackPayload(post) {
         attachments: [attachment],
     };
 }
+
+// for cloud functions
+exports.pixlack = indexFunc;
